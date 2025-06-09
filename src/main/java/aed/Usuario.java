@@ -25,11 +25,20 @@ public class Usuario implements Comparable<Usuario> {
         saldo -= monto;
     }
 
-    @Override // esto va aca ???? por las dudas lo agrego
+    @Override
     public int compareTo(Usuario otro) {
-        if (this.saldo != otro.saldo) {
-            return Integer.compare(this.saldo, otro.saldo);
+        if (this.saldo > otro.saldo) {
+            return -1;
+        } else if (this.saldo < otro.saldo) {
+            return 1;
+        } else {
+            if (this.id < otro.id) {
+                return -1; 
+            } else if (this.id > otro.id) {
+                return 1; 
+            } else {
+                return 0;
+            }
         }
-        return Integer.compare(otro.id, this.id); // prioriza el de menor id
     }
 }
