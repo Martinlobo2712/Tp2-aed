@@ -7,14 +7,20 @@ public class ListaEnlazada<T> {
     private class Nodo{
         private Nodo sig;
         private T valor;
-        Nodo(T v){ valor= v;}
+
+        Nodo(T v){
+            valor= v;
+        }
     }
+
     public ListaEnlazada(){
-        primero=null;
-        ultimo=null;
+        primero = null;
+        ultimo = null;
     }
+
     public void agregar(T elem){
         Nodo nuevo_nodo=new Nodo (elem);
+
         if (primero==null){
             primero=nuevo_nodo;
             ultimo=nuevo_nodo;
@@ -24,9 +30,11 @@ public class ListaEnlazada<T> {
             ultimo=nuevo_nodo;
         }
     }
+
     public T obtenerUltimo() {
         return ultimo.valor;
     }
+
     public void eliminar(int i) {
         if (i == 0) {
             primero = primero.sig;

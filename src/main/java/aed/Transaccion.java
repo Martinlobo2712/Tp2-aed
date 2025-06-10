@@ -21,6 +21,7 @@ public class Transaccion implements Comparable<Transaccion> {
         if (this.id < otra.id) return -1;
         return 0;
     }
+
     @Override
     public boolean equals(Object otro) {
         if (this == otro) return true;
@@ -28,9 +29,11 @@ public class Transaccion implements Comparable<Transaccion> {
         Transaccion otra = (Transaccion) otro;
         return this.id == otra.id;
     }
+
     public int id_transaccion(){
         return id;
     }
+
     public int monto() {
         return monto;
     }
@@ -42,6 +45,7 @@ public class Transaccion implements Comparable<Transaccion> {
     public int id_vendedor() {
         return id_vendedor;
     }
+
     public boolean esCreacion(Transaccion tx){
         return tx.id_comprador==0;
     }
