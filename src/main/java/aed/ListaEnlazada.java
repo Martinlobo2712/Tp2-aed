@@ -1,6 +1,6 @@
 package aed;
 
-public class ListaEnlazada<T> {
+public class ListaEnlazada<T extends Comparable<T>> {
     private Nodo primero;
     private Nodo ultimo;
 
@@ -13,12 +13,33 @@ public class ListaEnlazada<T> {
         }
     }
 
+    public class Handle implements Comparable<Handle> {
+        private Nodo nodo;
+
+        private Handle(Nodo nodo) {
+            this.nodo = nodo;
+        }
+
+        public T getValor() {
+            return nodo.valor;
+        }
+
+        public void setValor(T nuevoValor) {
+            nodo.valor = nuevoValor;
+        }
+
+        @Override
+        public int compareTo(Handle o) {
+            return nodo.valor.compareTo(o.nodo.valor);
+        }
+    }
+
     public ListaEnlazada(){
         primero = null;
         ultimo = null;
     }
 
-    public void agregar(T elem){
+    public Handle agregar(T elem){
         Nodo nuevo_nodo=new Nodo (elem);
 
         if (primero==null){
@@ -29,6 +50,7 @@ public class ListaEnlazada<T> {
             ultimo.sig=nuevo_nodo;
             ultimo=nuevo_nodo;
         }
+        return new Handle(nuevo_nodo);
     }
 
     public T obtenerUltimo() {

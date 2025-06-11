@@ -1,6 +1,6 @@
 package aed;
 
-public class Heap<T extends Comparable<T> > {
+public class Heap<T extends Comparable<T>> {
 
     private Nodo raiz;
     private int cantNodos; // Integer.toBinaryString(num)
@@ -23,8 +23,7 @@ public class Heap<T extends Comparable<T> > {
     public Heap(T[] array){
         cantNodos = array.length;
 
-        @SuppressWarnings("unchecked") // Cast seguro: el array solo va a tener instancias de Nodo creadas localmente
-        Nodo[] nodos = (Nodo[]) new Object[cantNodos];
+        Object[] nodos = new Object[cantNodos];
 
         for(int i = 0; i < cantNodos; i++){
             nodos[i] = new Nodo(array[i], null);
@@ -34,21 +33,21 @@ public class Heap<T extends Comparable<T> > {
             int izq = 2 * i + 1, der = 2 * i + 2;
 
             if(izq < cantNodos){
-                nodos[i].izq = nodos[izq];
-                nodos[izq].padre = nodos[i];
+                ((Nodo)nodos[i]).izq = (Nodo)nodos[izq];
+                ((Nodo)nodos[izq]).padre = (Nodo)nodos[i];
             }
 
             if(der < cantNodos){
-                nodos[i].der = nodos[der];
-                nodos[der].padre = nodos[i];
+                ((Nodo)nodos[i]).der = (Nodo)nodos[der];
+                ((Nodo)nodos[der]).padre = (Nodo)nodos[i];
             }
         }
 
         for(int i = cantNodos/2-1; i >= 0; i--){
-            heapify(nodos[i]);
+            heapify((Nodo)nodos[i]);
         }
 
-        raiz = nodos[0];
+        raiz = (Nodo)nodos[0];
     }
 
     private void heapify(Nodo nodo) {
@@ -113,7 +112,7 @@ public class Heap<T extends Comparable<T> > {
             return null;
         }
         T max = raiz.valor;
-        
+
         if (cantNodos == 1) {
             raiz = null;
         }else{
@@ -136,6 +135,30 @@ public class Heap<T extends Comparable<T> > {
         heapify(raiz);
 
         return max;
+    }
+
+    public void imprimirPorNiveles() {
+        if (raiz == null) {
+            System.out.println("Heap vacío.");
+            return;
+        }
+
+        java.util.Queue<Nodo> cola = new java.util.LinkedList<>();
+        cola.add(raiz);
+
+        while (!cola.isEmpty()) {
+            int nivel = cola.size();
+
+            while (nivel-- > 0) {
+                Nodo actual = cola.poll();
+                System.out.print(actual.valor + " ");
+
+                if (actual.izq != null) cola.add(actual.izq);
+                if (actual.der != null) cola.add(actual.der);
+            }
+
+            System.out.println();
+        }
     }
 
 }
