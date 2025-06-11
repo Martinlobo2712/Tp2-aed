@@ -20,6 +20,7 @@ public class Heap<T extends Comparable<T>> {
         cantNodos = 0;
     }
 
+    @SuppressWarnings("unchecked")
     public Heap(T[] array){
         cantNodos = array.length;
 
