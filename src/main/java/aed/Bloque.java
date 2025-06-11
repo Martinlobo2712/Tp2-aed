@@ -31,7 +31,11 @@ public class Bloque implements Comparable<Bloque> {
 
 
     public Transaccion hackearTx() {
-        Transaccion tx = heap.sacarMaximo().getValor(); //falta ver como sacar de la lista
+        ListaEnlazada<Transaccion>.Handle handle = heap.sacarMaximo();
+        Transaccion tx = handle.getValor();
+        
+        transacciones.eliminar(handle);
+
         if (!tx.esCreacion()) {
             suma -= tx.monto();
             cantidad--;
