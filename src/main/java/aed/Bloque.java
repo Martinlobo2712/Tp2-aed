@@ -1,5 +1,5 @@
 package aed;
-//Esta incompleta!!!
+
 public class Bloque implements Comparable<Bloque> {
     private int suma = 0;
     private int cantidad = 0;
