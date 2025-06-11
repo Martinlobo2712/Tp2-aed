@@ -46,7 +46,7 @@ public class Transaccion implements Comparable<Transaccion> {
         return id_vendedor;
     }
 
-    public boolean esCreacion(Transaccion tx){
-        return tx.id_comprador==0;
-    }
+    public boolean esCreacion(){
+        return id_comprador==0;
+    }   
 }

@@ -1,14 +1,54 @@
 package aed;
-
+//Esta incompleta!!!
 public class Bloque implements Comparable<Bloque> {
-    int suma = 0, cantidad = 0;
-    ListaEnlazada<Transaccion> transacciones;
-    Heap<ListaEnlazada<Transaccion>.Handle> heap;
-
+    private int suma = 0;
+    private int cantidad = 0;
+    private ListaEnlazada<Transaccion> transacciones;
+    private Heap<ListaEnlazada<Transaccion>.Handle> heap;
 
 
     @Override
     public int compareTo(Bloque o) {
         return 0;
+    }
+    public Bloque(ListaEnlazada<Transaccion> transacciones) {
+        this.transacciones = new ListaEnlazada<>();
+        this.heap = new Heap<>();
+
+        for (Transaccion tx : transacciones) {
+            ListaEnlazada<Transaccion>.Handle handle = this.transacciones.agregar(tx);
+            heap.agregar(handle);
+
+            if (!tx.esCreacion()) {
+                suma += tx.monto();
+                cantidad++;
+            }
+        }
+    }
+    public Transaccion txMayorValor() {
+        return heap.verMaximo().getValor();
+    }
+
+
+    public Transaccion hackearTx() {
+        Transaccion tx = heap.sacarMaximo().getValor(); //falta ver como sacar de la lista
+        if (!tx.esCreacion()) {
+            suma -= tx.monto();
+            cantidad--;
+        }
+        return tx;
+    }
+
+    public ListaEnlazada<Transaccion> obtenerTransacciones() {
+        ListaEnlazada<Transaccion> copia = new ListaEnlazada<>();
+        for (Transaccion tx : transacciones) {
+            copia.agregar(tx);
+        }
+        return copia;
+    }
+
+    public int montoPromedio() {
+        if (cantidad == 0) return 0;
+        return suma / cantidad;
     }
 }
