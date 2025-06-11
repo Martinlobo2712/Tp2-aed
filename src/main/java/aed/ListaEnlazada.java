@@ -1,33 +1,34 @@
 package aed;
 
-public class ListaEnlazada<T> {
+import java.util.Iterator;
+
+public class ListaEnlazada<T> implements Iterable<T> {
     private Nodo primero;
     private Nodo ultimo;
 
-    private class Nodo{
+    private class Nodo {
         private Nodo sig;
         private T valor;
 
-        Nodo(T v){
-            valor= v;
+        Nodo(T v) {
+            valor = v;
         }
     }
 
-    public ListaEnlazada(){
+    public ListaEnlazada() {
         primero = null;
         ultimo = null;
     }
 
-    public void agregar(T elem){
-        Nodo nuevo_nodo=new Nodo (elem);
+    public void agregar(T elem) {
+        Nodo nuevo_nodo = new Nodo(elem);
 
-        if (primero==null){
-            primero=nuevo_nodo;
-            ultimo=nuevo_nodo;
-        }
-        else{
-            ultimo.sig=nuevo_nodo;
-            ultimo=nuevo_nodo;
+        if (primero == null) {
+            primero = nuevo_nodo;
+            ultimo = nuevo_nodo;
+        } else {
+            ultimo.sig = nuevo_nodo;
+            ultimo = nuevo_nodo;
         }
     }
 
@@ -57,4 +58,24 @@ public class ListaEnlazada<T> {
         }
     }
 
+    @Override
+    public Iterator<T> iterator() {
+        return new IteradorLista();
+    }
+
+    private class IteradorLista implements Iterator<T> {
+        private Nodo actual = primero;
+
+        @Override
+        public boolean hasNext() {
+            return actual != null;
+        }
+
+        @Override
+        public T next() {
+            T valor = actual.valor;
+            actual = actual.sig;
+            return valor;
+        }
+    }
 }
