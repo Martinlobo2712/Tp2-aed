@@ -1,15 +1,15 @@
-package aed;
+package org.example;
 
 public class Heap<T extends Comparable<T>> {
 
     private Nodo raiz;
     private int cantNodos; // Integer.toBinaryString(num)
 
-    private class Nodo{
+    private class Nodo {
         T valor;
         Nodo izq, der, padre;
 
-        public Nodo(T valor, Nodo padre){
+        public Nodo(T valor, Nodo padre) {
             this.valor = valor;
             this.padre = padre;
         }
@@ -32,41 +32,45 @@ public class Heap<T extends Comparable<T>> {
 
     }
 
-    public Heap(){
+    public Heap() {
         this.raiz = null;
         cantNodos = 0;
     }
 
     @SuppressWarnings("unchecked")
-    public Heap(T[] array, Handle[] handleArray){
+    public Heap(T[] array, Heap<T>.Handle[] handleArray) {
         cantNodos = array.length;
 
         Object[] nodos = new Object[cantNodos];
 
-        for(int i = 0; i < cantNodos; i++){
+        for (int i = 0; i < cantNodos; i++) {
             nodos[i] = new Nodo(array[i], null);
             handleArray[i] = new Handle((Nodo) nodos[i]);
         }
 
-        for(int i = 0; i < cantNodos; i++){
+        for (int i = 0; i < cantNodos; i++) {
             int izq = 2 * i + 1, der = 2 * i + 2;
 
-            if(izq < cantNodos){
-                ((Nodo)nodos[i]).izq = (Nodo)nodos[izq];
-                ((Nodo)nodos[izq]).padre = (Nodo)nodos[i];
+            if (izq < cantNodos) {
+                ((Nodo) nodos[i]).izq = (Nodo) nodos[izq];
+                ((Nodo) nodos[izq]).padre = (Nodo) nodos[i];
             }
 
-            if(der < cantNodos){
-                ((Nodo)nodos[i]).der = (Nodo)nodos[der];
-                ((Nodo)nodos[der]).padre = (Nodo)nodos[i];
+            if (der < cantNodos) {
+                ((Nodo) nodos[i]).der = (Nodo) nodos[der];
+                ((Nodo) nodos[der]).padre = (Nodo) nodos[i];
             }
         }
 
-        for(int i = cantNodos/2-1; i >= 0; i--){
-            heapify((Nodo)nodos[i]);
+        for (int i = cantNodos / 2 - 1; i >= 0; i--) {
+            heapify((Nodo) nodos[i]);
         }
 
-        raiz = (Nodo)nodos[0];
+        Nodo nodo = (Nodo) nodos[0];
+        while (nodo.padre != null) {
+            nodo = nodo.padre;
+        }
+        raiz = nodo;
     }
 
     private void heapify(Nodo nodo) {
@@ -81,27 +85,75 @@ public class Heap<T extends Comparable<T>> {
         }
 
         if (mayor != nodo) {
-            T temp = nodo.valor;
-            nodo.valor = mayor.valor;
-            mayor.valor = temp;
+            swapPadreHijo(nodo, mayor);
 
-            heapify(mayor);
+            heapify(nodo);
         }
     }
 
-    public void agregar(T valor){
-        String recorrido = Integer.toBinaryString(cantNodos+1);
+    private void heapifyUp(Nodo nodo) {
+        while (nodo.padre != null && nodo.valor.compareTo(nodo.padre.valor) > 0) {
+            swapPadreHijo(nodo.padre, nodo);
+        }
+    }
 
-        if(cantNodos == 0){
+    private void swapPadreHijo(Nodo padre, Nodo hijo) {
+        Nodo abuelo = padre.padre;
+
+        if (abuelo != null) {
+            if (abuelo.izq == padre) {
+                abuelo.izq = hijo;
+            } else {
+                abuelo.der = hijo;
+            }
+        } else {
+            raiz = hijo;
+        }
+        hijo.padre = abuelo;
+
+        Nodo hijoIzq = hijo.izq;
+        Nodo hijoDer = hijo.der;
+        Nodo padreIzq = padre.izq;
+        Nodo padreDer = padre.der;
+
+        if (padre.izq == hijo) {
+            hijo.izq = padre;
+            hijo.der = padreDer;
+            if (padreDer != null) {
+                padreDer.padre = hijo;
+            }
+        } else {
+            hijo.der = padre;
+            hijo.izq = padreIzq;
+            if (padreIzq != null) {
+                padreIzq.padre = hijo;
+            }
+        }
+
+        padre.padre = hijo;
+        padre.izq = hijoIzq;
+        padre.der = hijoDer;
+        if (hijoIzq != null) {
+            hijoIzq.padre = padre;
+        }
+        if (hijoDer != null) {
+            hijoDer.padre = padre;
+        }
+    }
+
+    public void agregar(T valor) {
+        String recorrido = Integer.toBinaryString(cantNodos + 1);
+
+        if (cantNodos == 0) {
             this.raiz = new Nodo(valor, null);
-        }else {
+        } else {
             Nodo nodo = this.raiz;
 
             for (int i = 1; i < recorrido.length() - 1; i++) {
                 nodo = (recorrido.charAt(i) == '1') ? nodo.der : nodo.izq;
             }
 
-            if (recorrido.charAt(recorrido.length()-1) == '0') {
+            if (recorrido.charAt(recorrido.length() - 1) == '0') {
                 nodo.izq = new Nodo(valor, nodo);
                 heapifyUp(nodo.izq);
             } else {
@@ -112,53 +164,52 @@ public class Heap<T extends Comparable<T>> {
         cantNodos++;
     }
 
-    private void heapifyUp(Nodo nodo) {
-        while (nodo.padre != null && nodo.valor.compareTo(nodo.padre.valor) > 0) {
-            T temp = nodo.valor;
-            nodo.valor = nodo.padre.valor;
-            nodo.padre.valor = temp;
-
-            nodo = nodo.padre;
-        }
-    }
-
     public T verMaximo() {
         return (raiz == null) ? null : raiz.valor;
     }
 
-    public T sacarMaximo(){
-        if (raiz == null){
+    public T sacarMaximo() {
+        if (raiz == null) {
             return null;
         }
         T max = raiz.valor;
 
         if (cantNodos == 1) {
             raiz = null;
-        }else{
+        } else {
             String recorrido = Integer.toBinaryString(cantNodos);
             Nodo ultimo = raiz;
 
             for (int i = 1; i < recorrido.length(); i++) {
                 ultimo = (recorrido.charAt(i) == '1') ? ultimo.der : ultimo.izq;
             }
-            raiz.valor = ultimo.valor;
+            ultimo.der = raiz.der;
+            ultimo.izq = raiz.izq;
+            raiz = ultimo;
 
-            if(ultimo.padre.der == ultimo){
+            if (ultimo.padre.der == ultimo) {
                 ultimo.padre.der = null;
-            }else{
+            } else {
                 ultimo.padre.izq = null;
             }
+            ultimo.padre = null;
         }
         cantNodos--;
 
-        heapify(raiz);
+        if (cantNodos > 1) {
+            heapify(raiz);
+        }
 
         return max;
     }
 
     public void reubicar(Handle handle) {
-        heapifyUp(handle.nodo);
-        heapify(handle.nodo);
+        Nodo nodo = handle.nodo;
+        if (nodo.padre != null && nodo.valor.compareTo(nodo.padre.valor) > 0) {
+            heapifyUp(nodo);
+        } else {
+            heapify(nodo);
+        }
     }
 
     // Esto es debug habría que borrarlo
@@ -185,5 +236,5 @@ public class Heap<T extends Comparable<T>> {
             System.out.println();
         }
     }
-
 }
+
