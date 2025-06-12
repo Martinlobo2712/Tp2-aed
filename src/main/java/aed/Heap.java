@@ -15,19 +15,37 @@ public class Heap<T extends Comparable<T>> {
         }
     }
 
+    public class Handle {
+        private Nodo nodo;
+
+        private Handle(Heap<T>.Nodo nodo) {
+            this.nodo = nodo;
+        }
+
+        public T getValor() {
+            return nodo.valor;
+        }
+
+        public void setValor(T nuevoValor) {
+            nodo.valor = nuevoValor;
+        }
+
+    }
+
     public Heap(){
         this.raiz = null;
         cantNodos = 0;
     }
 
     @SuppressWarnings("unchecked")
-    public Heap(T[] array){
+    public Heap(T[] array, Handle[] handleArray){
         cantNodos = array.length;
 
         Object[] nodos = new Object[cantNodos];
 
         for(int i = 0; i < cantNodos; i++){
             nodos[i] = new Nodo(array[i], null);
+            handleArray[i] = new Handle((Nodo) nodos[i]);
         }
 
         for(int i = 0; i < cantNodos; i++){
@@ -138,6 +156,12 @@ public class Heap<T extends Comparable<T>> {
         return max;
     }
 
+    public void reubicar(Handle handle) {
+        heapifyUp(handle.nodo);
+        heapify(handle.nodo);
+    }
+
+    // Esto es debug habría que borrarlo
     public void imprimirPorNiveles() {
         if (raiz == null) {
             System.out.println("Heap vacío.");

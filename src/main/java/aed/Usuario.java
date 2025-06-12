@@ -21,10 +21,6 @@ public class Usuario implements Comparable<Usuario> {
         saldo += monto;
     }
 
-    public void disminuirSaldo(int monto) {
-        saldo -= monto;
-    }
-
     @Override
     public int compareTo(Usuario otro) {
         if (this.saldo > otro.saldo) {

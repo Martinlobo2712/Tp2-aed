@@ -6,11 +6,6 @@ public class Bloque implements Comparable<Bloque> {
     private ListaEnlazada<Transaccion> transacciones;
     private Heap<ListaEnlazada<Transaccion>.Handle> heap;
 
-
-    @Override
-    public int compareTo(Bloque o) {
-        return 0;
-    }
     public Bloque(ListaEnlazada<Transaccion> transacciones) {
         this.transacciones = new ListaEnlazada<>();
         this.heap = new Heap<>();
@@ -25,10 +20,10 @@ public class Bloque implements Comparable<Bloque> {
             }
         }
     }
+
     public Transaccion txMayorValor() {
         return heap.verMaximo().getValor();
     }
-
 
     public Transaccion hackearTx() {
         ListaEnlazada<Transaccion>.Handle handle = heap.sacarMaximo();
@@ -54,5 +49,10 @@ public class Bloque implements Comparable<Bloque> {
     public int montoPromedio() {
         if (cantidad == 0) return 0;
         return suma / cantidad;
+    }
+
+    @Override
+    public int compareTo(Bloque o) {
+        return 0;
     }
 }
