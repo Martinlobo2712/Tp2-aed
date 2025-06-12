@@ -24,14 +24,14 @@ public class Usuario implements Comparable<Usuario> {
     @Override
     public int compareTo(Usuario otro) {
         if (this.saldo > otro.saldo) {
-            return -1;
-        } else if (this.saldo < otro.saldo) {
             return 1;
+        } else if (this.saldo < otro.saldo) {
+            return -1;
         } else {
             if (this.id < otro.id) {
-                return -1; 
-            } else if (this.id > otro.id) {
                 return 1; 
+            } else if (this.id > otro.id) {
+                return -1; 
             } else {
                 return 0;
             }
