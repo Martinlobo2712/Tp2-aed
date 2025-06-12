@@ -22,14 +22,16 @@ public class Transaccion implements Comparable<Transaccion> {
         return 0;
     }
 
-    @Override
-    public boolean equals(Object otro) {
-        if (this == otro) return true;
-        if (!(otro instanceof Transaccion)) return false;
-        Transaccion otra = (Transaccion) otro;
-        return this.id == otra.id;
-    }
+    public boolean equals(Object otra) {
+        boolean otraIsNull=(otra==null);
+        boolean claseDistinta=otra.getClass()!=this.getClass();
+        if (otraIsNull||claseDistinta){
+            return false;
+        }
+        Transaccion otraTx=(Transaccion) otra;
 
+        return otraTx.id==id;
+    }
     public int id_transaccion(){
         return id;
     }
