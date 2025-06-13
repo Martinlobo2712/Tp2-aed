@@ -5,6 +5,7 @@ import java.util.Iterator;
 public class ListaEnlazada<T extends Comparable<T>> implements Iterable<T> {
     private Nodo primero;
     private Nodo ultimo;
+    private int longitud = 0;
 
     private class Nodo {
         private Nodo sig;
@@ -44,6 +45,10 @@ public class ListaEnlazada<T extends Comparable<T>> implements Iterable<T> {
         ultimo = null;
     }
 
+    public int getLongitud(){
+        return longitud;
+    }
+
     public Handle agregar(T elem) {
         Nodo nuevo_nodo = new Nodo(elem);
 
@@ -55,6 +60,7 @@ public class ListaEnlazada<T extends Comparable<T>> implements Iterable<T> {
             nuevo_nodo.ant = ultimo;
             ultimo = nuevo_nodo;
         }
+        longitud++;
         return new Handle(nuevo_nodo);
     }
 
@@ -70,6 +76,7 @@ public class ListaEnlazada<T extends Comparable<T>> implements Iterable<T> {
         } else {
             ultimo = nodo.ant;
         }
+        longitud--;
     }
 
     public T obtenerUltimo() {
@@ -112,6 +119,7 @@ public class ListaEnlazada<T extends Comparable<T>> implements Iterable<T> {
                 }
             }
         }
+        longitud--;
     }
 
     @Override

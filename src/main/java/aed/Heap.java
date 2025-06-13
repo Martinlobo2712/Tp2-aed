@@ -1,6 +1,6 @@
 package aed;
 
-public class Heap<T extends Comparable<T>> {
+public class    Heap<T extends Comparable<T>> {
 
     private Nodo raiz;
     private int cantNodos; // Integer.toBinaryString(num)
@@ -43,12 +43,12 @@ public class Heap<T extends Comparable<T>> {
 
         Object[] nodos = new Object[cantNodos];
 
-        for (int i = 0; i < cantNodos; i++) {
+        for (int i = 0; i < cantNodos; i++) { // O(n)
             nodos[i] = new Nodo(array[i], null);
             handleArray[i] = new Handle((Nodo) nodos[i]);
         }
 
-        for (int i = 0; i < cantNodos; i++) {
+        for (int i = 0; i < cantNodos; i++) {   // O(n)
             int izq = 2 * i + 1, der = 2 * i + 2;
 
             if (izq < cantNodos) {
@@ -62,12 +62,46 @@ public class Heap<T extends Comparable<T>> {
             }
         }
 
-        for (int i = cantNodos / 2 - 1; i >= 0; i--) {
+        for (int i = cantNodos / 2 - 1; i >= 0; i--) { // O(n)
             heapify((Nodo) nodos[i]);
         }
 
         Nodo nodo = (Nodo) nodos[0];
-        while (nodo.padre != null) {
+        while (nodo.padre != null) { // O(log(n))
+            nodo = nodo.padre;
+        }
+        raiz = nodo;
+    }
+
+    public Heap(T[] array) {
+        cantNodos = array.length;
+
+        Object[] nodos = new Object[cantNodos];
+
+        for (int i = 0; i < cantNodos; i++) { // O(n)
+            nodos[i] = new Nodo(array[i], null);
+        }
+
+        for (int i = 0; i < cantNodos; i++) {   // O(n)
+            int izq = 2 * i + 1, der = 2 * i + 2;
+
+            if (izq < cantNodos) {
+                ((Nodo) nodos[i]).izq = (Nodo) nodos[izq];
+                ((Nodo) nodos[izq]).padre = (Nodo) nodos[i];
+            }
+
+            if (der < cantNodos) {
+                ((Nodo) nodos[i]).der = (Nodo) nodos[der];
+                ((Nodo) nodos[der]).padre = (Nodo) nodos[i];
+            }
+        }
+
+        for (int i = cantNodos / 2 - 1; i >= 0; i--) { // O(n)
+            heapify((Nodo) nodos[i]);
+        }
+
+        Nodo nodo = (Nodo) nodos[0];
+        while (nodo.padre != null) { // O(log(n))
             nodo = nodo.padre;
         }
         raiz = nodo;
@@ -168,7 +202,7 @@ public class Heap<T extends Comparable<T>> {
         return (raiz == null) ? null : raiz.valor;
     }
 
-    public T sacarMaximo() {
+    public T sacarMaximo() { // O(log(n))
         if (raiz == null) {
             return null;
         }

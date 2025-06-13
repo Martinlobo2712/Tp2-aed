@@ -13,6 +13,13 @@ public class Transaccion implements Comparable<Transaccion> {
         this.monto = monto;
     }
 
+    public Transaccion(Transaccion transaccion) {
+        this.id = transaccion.id_transaccion();
+        this.id_comprador = transaccion.id_comprador();
+        this.id_vendedor = transaccion.id_vendedor();
+        this.monto = transaccion.monto();
+    }
+
     @Override
     public int compareTo(Transaccion otra) {
         if (this.monto > otra.monto) return 1;

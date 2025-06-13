@@ -9,12 +9,12 @@ public class Blockchain {
         ultimoBloque=null;
     }
 
-    public void agregarBloque(Bloque bloque){
-        blockchain.agregar(bloque);
-        ultimoBloque=bloque;
+    public void agregarBloque(Transaccion[] transacciones){ // O(n)
+        blockchain.agregar(new Bloque(transacciones)); // O(n)
+        ultimoBloque = blockchain.obtenerUltimo(); // O(1)
     }
 
-    public Bloque ultimoBloque() {
+    public Bloque ultimoBloque() { // O(1)
         return ultimoBloque;
     }
 
