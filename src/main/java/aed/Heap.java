@@ -73,6 +73,7 @@ public class    Heap<T extends Comparable<T>> {
         raiz = nodo;
     }
 
+    @SuppressWarnings("unchecked")
     public Heap(T[] array) {
         cantNodos = array.length;
 
