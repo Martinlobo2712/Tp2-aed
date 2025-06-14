@@ -5,7 +5,7 @@ import java.util.Iterator;
 public class ListaEnlazada<T extends Comparable<T>> implements Iterable<T> {
     private Nodo primero;
     private Nodo ultimo;
-    private int longitud = 0;
+    private int longitud;
 
     private class Nodo {
         private Nodo sig;
@@ -14,8 +14,6 @@ public class ListaEnlazada<T extends Comparable<T>> implements Iterable<T> {
 
         Nodo(T v) {
             valor = v;
-            sig = null;
-            ant = null;
         }
     }
 
@@ -43,29 +41,30 @@ public class ListaEnlazada<T extends Comparable<T>> implements Iterable<T> {
     public ListaEnlazada() {
         primero = null;
         ultimo = null;
+        longitud = 0;
     }
 
-    public int getLongitud(){
+    public int getLongitud() {
         return longitud;
     }
 
     public Handle agregar(T elem) {
-        Nodo nuevo_nodo = new Nodo(elem);
-
+        Nodo nuevo = new Nodo(elem);
         if (primero == null) {
-            primero = nuevo_nodo;
-            ultimo = nuevo_nodo;
+            primero = nuevo;
+            ultimo = nuevo;
         } else {
-            ultimo.sig = nuevo_nodo;
-            nuevo_nodo.ant = ultimo;
-            ultimo = nuevo_nodo;
+            ultimo.sig = nuevo;
+            nuevo.ant = ultimo;
+            ultimo = nuevo;
         }
         longitud++;
-        return new Handle(nuevo_nodo);
+        return new Handle(nuevo);
     }
 
     public void eliminar(Handle handle) {
         Nodo nodo = handle.nodo;
+        if (nodo == null) return;
         if (nodo.ant != null) {
             nodo.ant.sig = nodo.sig;
         } else {
@@ -80,11 +79,11 @@ public class ListaEnlazada<T extends Comparable<T>> implements Iterable<T> {
     }
 
     public T obtenerUltimo() {
-        return ultimo.valor;
+        return (ultimo != null) ? ultimo.valor : null;
     }
 
     public void eliminar(int i) {
-        if (primero == null) return;
+        if (i < 0 || primero == null) return;
 
         if (i == 0) {
             if (primero == ultimo) {
@@ -94,32 +93,28 @@ public class ListaEnlazada<T extends Comparable<T>> implements Iterable<T> {
                 primero = primero.sig;
                 primero.ant = null;
             }
+            longitud--;
             return;
         }
 
-        Nodo actual = primero;
-        int j = 0;
-        while (j < i && actual != null) {
+        Nodo actual = primero.sig;
+        int j = 1;
+        while (actual != null && j < i) {
             actual = actual.sig;
             j++;
         }
 
         if (actual != null) {
-            if (actual == ultimo) {
-                ultimo = actual.ant;
-                if (ultimo != null) {
-                    ultimo.sig = null;
-                }
+            if (actual.sig != null) {
+                actual.sig.ant = actual.ant;
             } else {
-                if (actual.ant != null) {
-                    actual.ant.sig = actual.sig;
-                }
-                if (actual.sig != null) {
-                    actual.sig.ant = actual.ant;
-                }
+                ultimo = actual.ant;
             }
+            if (actual.ant != null) {
+                actual.ant.sig = actual.sig;
+            }
+            longitud--;
         }
-        longitud--;
     }
 
     @Override
