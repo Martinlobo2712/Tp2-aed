@@ -45,14 +45,6 @@ public class Bloque implements Comparable<Bloque> {
         return tx;
     }
 
-    public ListaEnlazada<Transaccion> obtenerTransacciones() {
-        ListaEnlazada<Transaccion> copia = new ListaEnlazada<>();
-        for (Transaccion tx : transacciones) {
-            copia.agregar(tx);
-        }
-        return copia;
-    }
-
     public int montoPromedio() { // O(1)
         if (cantidad == 0) return 0;
         return suma / cantidad;
