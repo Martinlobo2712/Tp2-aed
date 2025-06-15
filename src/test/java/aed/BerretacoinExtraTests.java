@@ -460,7 +460,21 @@ public class BerretacoinExtraTests {
     assertEquals(1, result.id_transaccion());
     assertEquals(1000, result.monto());
 }
-
+    /*
+    @Test
+    public void testMaximoTenedorPostHackeo() {
+    Berretacoin bc = new Berretacoin(10);
+    bc.agregarBloque(new Transaccion[]{
+        new Transaccion(1, 0, 1, 1000),
+        new Transaccion(2, 1, 2, 500)
+    });
+    
+    assertEquals(2, bc.maximoTenedor()); // Usuario 2 tiene 500
+    
+    bc.hackearTx(); // Revierte la transacción de 500
+    
+    assertEquals(1, bc.maximoTenedor()); // Usuario 1 vuelve a tener 1000
+}*/
 
 
     
