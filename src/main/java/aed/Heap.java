@@ -1,6 +1,6 @@
 package aed;
 
-public class    Heap<T extends Comparable<T>> {
+public class Heap<T extends Comparable<T>> {
 
     private Nodo raiz;
     private int cantNodos; // Integer.toBinaryString(num)
@@ -247,29 +247,5 @@ public class    Heap<T extends Comparable<T>> {
         }
     }
 
-    // Esto es debug habría que borrarlo
-    public void imprimirPorNiveles() {
-        if (raiz == null) {
-            System.out.println("Heap vacío.");
-            return;
-        }
-
-        java.util.Queue<Nodo> cola = new java.util.LinkedList<>();
-        cola.add(raiz);
-
-        while (!cola.isEmpty()) {
-            int nivel = cola.size();
-
-            while (nivel-- > 0) {
-                Nodo actual = cola.poll();
-                System.out.print(actual.valor + " ");
-
-                if (actual.izq != null) cola.add(actual.izq);
-                if (actual.der != null) cola.add(actual.der);
-            }
-
-            System.out.println();
-        }
-    }
 }
 
