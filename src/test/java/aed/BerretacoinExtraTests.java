@@ -198,5 +198,270 @@ public class BerretacoinExtraTests {
         // Despues de hackear,el saldo de user2 se reduce en 50 -> user1 es el maximo tenedor
         assertEquals(1, bc.maximoTenedor());
     }
+    @Test
+    public void testTransaccionesConMontoCero() {
+    Berretacoin bc = new Berretacoin(5);
+    Transaccion[] transacciones = {
+        new Transaccion(1, 1, 2, 0),
+        new Transaccion(2, 3, 4, 0),
+        new Transaccion(3, 0, 5, 0) // Minero recibe 0
+    };
+    
+    bc.agregarBloque(transacciones);
+    
+    // Verificar que el monto promedio es 0
+    assertEquals(0, bc.montoMedioUltimoBloque());
+    
+    // Verificar que el máximo tenedor sigue siendo 1 (todos con saldo 0)
+    assertEquals(1, bc.maximoTenedor());
+}
 
+   @Test
+    public void testTxMayorValor() {
+    Transaccion[] txs = {
+        new Transaccion(1, 0, 1, 100),
+        new Transaccion(2, 1, 2, 200),
+        new Transaccion(3, 2, 3, 150)
+    };
+    
+    Bloque bloque = new Bloque(txs);
+    
+    assertEquals(200, bloque.txMayorValor().monto());
+    assertEquals(2, bloque.txMayorValor().id_transaccion());
+}
+
+    @Test
+    public void testHackearTx() {
+    Transaccion txEspecial = new Transaccion(999, 1, 2, 500);
+    Transaccion[] txs = {
+        new Transaccion(1, 0, 1, 100),
+        txEspecial,
+        new Transaccion(2, 2, 3, 200)
+    };
+    
+    Bloque bloque = new Bloque(txs);
+    
+    Transaccion hackeada = bloque.hackearTx();
+    
+    assertEquals(500, hackeada.monto());
+    assertEquals(999, hackeada.id_transaccion());
+    assertEquals(2, bloque.getSecuenciaTransacciones().length);
+    assertEquals(200, bloque.txMayorValor().monto());
+}
+    @Test
+    public void testMontoPromedio() {
+    Transaccion[] txs = {
+        new Transaccion(1, 0, 1, 100), // Transacción de creación (no cuenta)
+        new Transaccion(2, 1, 2, 200),
+        new Transaccion(3, 2, 3, 300),
+        new Transaccion(4, 3, 4, 400)
+    };
+    
+    Bloque bloque = new Bloque(txs);
+    
+    // Promedio de 200+300+400 = 900 / 3 = 300
+    assertEquals(300, bloque.montoPromedio());
+    
+    bloque.hackearTx(); // Elimina la de 400
+    // Nuevo promedio: 200+300 = 500 / 2 = 250
+    assertEquals(250, bloque.montoPromedio());
+}
+
+    @Test
+    public void testMontoMedioBloqueMixto() {
+    Berretacoin bc = new Berretacoin(10);
+    Transaccion[] txs = {
+        new Transaccion(1, 0, 1, 1000), // Creación
+        new Transaccion(2, 1, 2, 100),  // Normal
+        new Transaccion(3, 2, 3, 200),  // Normal
+        new Transaccion(4, 0, 4, 500)   // Creación
+    };
+    
+    bc.agregarBloque(txs);
+    
+    // Promedio de solo las normales (100 + 200)/2
+    assertEquals(150, bc.montoMedioUltimoBloque());
+}
+
+    @Test
+    public void testMontoMedioPostHackeo() {
+    Berretacoin bc = new Berretacoin(10);
+    Transaccion[] txs = {
+        new Transaccion(1, 1, 2, 100),
+        new Transaccion(2, 3, 4, 200),
+        new Transaccion(3, 5, 6, 300)
+    };
+    
+    bc.agregarBloque(txs);
+    
+    // Promedio inicial (100+200+300)/3 = 200
+    assertEquals(200, bc.montoMedioUltimoBloque());
+    
+    // Hackear la transacción de mayor valor (300)
+    bc.hackearTx();
+    
+    // Nuevo promedio (100+200)/2 = 150
+    assertEquals(150, bc.montoMedioUltimoBloque());
+}
+    @Test
+    public void testPrecisionPromedio() {
+    Berretacoin bc = new Berretacoin(5);
+    Transaccion[] txs = {
+        new Transaccion(1, 1, 2, 101),
+        new Transaccion(2, 2, 3, 102),
+        new Transaccion(3, 3, 4, 103)
+    };
+    
+    bc.agregarBloque(txs);
+    
+    // Promedio debería ser 102 (truncado, no redondeado)
+    assertEquals(102, bc.montoMedioUltimoBloque());
+}
+    @Test
+    public void testTxUltimoBloqueCopiaDefensiva() {
+    Berretacoin bc = new Berretacoin(5);
+    Transaccion tx = new Transaccion(1, 1, 2, 50);
+    bc.agregarBloque(new Transaccion[]{tx});
+    
+    Transaccion[] result = bc.txUltimoBloque();
+    result[0] = new Transaccion(99, 0, 0, 0); // Modificar la copia
+    
+    // Verificar que el original no cambió
+    assertEquals(1, bc.txUltimoBloque()[0].id_transaccion());
+}
+
+
+    @Test
+    public void testTxUltimoBloqueMultiplesBloques() {
+    Berretacoin bc = new Berretacoin(10);
+    bc.agregarBloque(new Transaccion[]{
+        new Transaccion(1, 1, 2, 100)
+    });
+    bc.agregarBloque(new Transaccion[]{
+        new Transaccion(2, 2, 3, 200),
+        new Transaccion(3, 3, 4, 300)
+    });
+    
+    Transaccion[] result = bc.txUltimoBloque();
+    assertEquals(2, result.length);
+    assertEquals(2, result[0].id_transaccion());
+    assertEquals(3, result[1].id_transaccion());
+}
+
+    @Test
+    public void testTxUltimoBloqueConCreaciones() {
+    Berretacoin bc = new Berretacoin(5);
+    bc.agregarBloque(new Transaccion[]{
+        new Transaccion(1, 0, 1, 1000),
+        new Transaccion(2, 0, 2, 2000)
+    });
+    
+    Transaccion[] result = bc.txUltimoBloque();
+    assertEquals(2, result.length);
+    assertEquals(0, result[0].id_comprador());
+    assertEquals(0, result[1].id_comprador());
+}
+
+    @Test
+    public void testMaximoTenedorMultiplesTransacciones() {
+    Berretacoin bc = new Berretacoin(10);
+    bc.agregarBloque(new Transaccion[]{
+        new Transaccion(1, 0, 1, 100),
+        new Transaccion(2, 1, 2, 50),  // Usuario 1: 100-50=50, Usuario 2: 50
+        new Transaccion(3, 2, 3, 25), // Usuario 2: 50-25=25, Usuario 3: 25
+        new Transaccion(4, 0, 4, 60)  // Usuario 4: 60
+    });
+    
+    // Usuario 1: 50, Usuario 2: 25, Usuario 3: 25, Usuario 4: 60
+    assertEquals(4, bc.maximoTenedor());
+}
+    @Test
+    public void testMaximoTenedorUsuariosSinTransacciones() {
+    Berretacoin bc = new Berretacoin(100);
+    bc.agregarBloque(new Transaccion[]{
+        new Transaccion(1, 0, 99, 10) // Solo usuario 99 recibe fondos
+    });
+    
+    assertEquals(99, bc.maximoTenedor());
+}
+    @Test
+    public void testMaximoTenedorConActualizacion() {
+    Berretacoin bc = new Berretacoin(5);
+    bc.agregarBloque(new Transaccion[]{
+        new Transaccion(1, 0, 1, 100),
+        new Transaccion(2, 0, 2, 200)
+    });
+    
+    assertEquals(2, bc.maximoTenedor()); // Usuario 2 con 200
+    
+    // Nueva transacción que hace que usuario 1 supere a usuario 2
+    bc.agregarBloque(new Transaccion[]{
+        new Transaccion(3, 0, 1, 150) // Usuario 1 ahora tiene 250
+    });
+    
+    assertEquals(1, bc.maximoTenedor());
+}
+    @Test
+    public void testTxMayorValorMultiplesBloques() {
+    Berretacoin bc = new Berretacoin(10);
+    
+    // Bloque 1
+    bc.agregarBloque(new Transaccion[]{
+        new Transaccion(1, 1, 2, 1000)
+    });
+    
+    // Bloque 2
+    bc.agregarBloque(new Transaccion[]{
+        new Transaccion(2, 3, 4, 500),
+        new Transaccion(3, 5, 6, 1500) // Mayor valor
+    });
+    
+    Transaccion result = bc.txMayorValorUltimoBloque();
+    assertEquals(3, result.id_transaccion());
+    assertEquals(1500, result.monto());
+}
+    @Test
+    public void testTxMayorValorEmpateMontos() {
+    Berretacoin bc = new Berretacoin(10);
+    Transaccion[] txs = {
+        new Transaccion(1, 1, 2, 200),
+        new Transaccion(2, 3, 4, 200), // Mismo monto, mayor id
+        new Transaccion(3, 5, 6, 100)
+    };
+    bc.agregarBloque(txs);
+    
+    Transaccion result = bc.txMayorValorUltimoBloque();
+    assertEquals(2, result.id_transaccion()); // Debería devolver la de mayor id en empate
+}
+    @Test
+    public void testTxMayorValorMontoCero() {
+    Berretacoin bc = new Berretacoin(5);
+    Transaccion[] txs = {
+        new Transaccion(1, 1, 2, 0),
+        new Transaccion(2, 3, 4, 0)
+    };
+    bc.agregarBloque(txs);
+    
+    Transaccion result = bc.txMayorValorUltimoBloque();
+    assertEquals(0, result.monto());
+    assertEquals(2, result.id_transaccion()); // En empate, mayor id
+}
+
+    @Test
+    public void testTxMayorValorTransaccionASiMismo() {
+    Berretacoin bc = new Berretacoin(5);
+    Transaccion[] txs = {
+        new Transaccion(1, 1, 1, 1000), // Transacción a sí mismo
+        new Transaccion(2, 2, 3, 500)
+    };
+    bc.agregarBloque(txs);
+    
+    Transaccion result = bc.txMayorValorUltimoBloque();
+    assertEquals(1, result.id_transaccion());
+    assertEquals(1000, result.monto());
+}
+
+
+
+    
 }
